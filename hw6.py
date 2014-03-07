@@ -9,10 +9,11 @@ LING 571 HW 6
 Word Sense Disambiguation
 """
 
+import sys
 import itertools
+
 from nltk.corpus import wordnet,wordnet_ic
 from nltk import wordpunct_tokenize
-import sys
 from nltk.corpus.reader.wordnet import information_content
 
 def removeBrackets(variable):
