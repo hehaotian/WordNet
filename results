@@ -1,0 +1,36 @@
+(tie, jacket, 6.7417934959)  (tie, suit, 6.7417934959)  
+necktie.n.01
+(suit, jacket, 6.7417934959)  (suit, tie, 6.7417934959)  
+suit.n.01
+(head, body, 5.48220993099)  (head, hand, 6.73291965574)  (head, eye, 4.59880170504)  (head, voice, 4.43543481914)  
+head.n.11
+(hand, body, 4.59880170504)  (hand, head, 6.73291965574)  (hand, eye, 4.97318382303)  (hand, voice, 2.90367626511)  
+hand.n.09
+(seat, body, 4.59880170504)  (seat, head, 4.59880170504)  (seat, eye, 5.69002742231)  (seat, voice, 1.78215759916)  
+seat.n.05
+(doctor, nurse, 7.13459881412)  (doctor, lawyer, 6.06281599406)  
+doctor.n.01
+(lawyer, doctor, 6.06281599406)  (lawyer, nurse, 6.06281599406)  
+lawyer.n.01
+(lookout, thief, 2.16511074977)  (lookout, mugging, 3.36714264231)  (lookout, chase, 4.19843757077)  (lookout, burglar, 2.16511074977)  
+lookout.n.03
+(line, plot, 4.58156722203)  (line, cast, 7.22482016393)  (line, title, 7.93287365566)  (line, character, 6.08131308231)  
+line.n.05
+(plot, line, 4.58156722203)  (plot, cast, 3.04725170102)  (plot, title, 4.58156722203)  (plot, character, 4.22013099939)  
+plot.n.03
+(line, news, 2.90367626511)  (line, lot, 3.55655365862)  (line, joke, 3.36714264231)  (line, half, 3.36163430611)  (line, hour, 2.84955371245)  (line, show, 3.36714264231)  (line, cast, 7.22482016393)  (line, brainstorm, 4.9572995839)  
+wrinkle.n.01
+(line, essay, 4.58156722203)  (line, title, 7.93287365566)  
+line.n.05
+(line, goods, 5.3705390337)  (line, sales, 5.53086053615)  (line, business, 6.71642832944)  (line, delivery, 4.64122995328)  
+line.n.23
+(line, roll, 7.22482016393)  (line, cloth, 2.43696079333)  (line, kit, 3.29174495332)  (line, length, 2.69178716344)  (line, cod, 1.44228704451)  (line, hook, 7.20997472403)  
+wrinkle.n.01
+(line, writing, 6.49789024849)  (line, typewriting, 4.34654869843)  (line, manuscript, 4.58156722203)  (line, headline, 7.93287365566)  (line, copy, 7.06625939413)  
+line.n.05
+(line, telephone, 3.29174495332)  (line, hotline, None)  
+production_line.n.01
+(line, telephone, 3.29174495332)  (line, computer, 4.16518105775)  (line, facsimile, 6.00974465145)  (line, plug, 8.46441493345)  
+pipeline.n.02
+(line, protein, 2.84955371245)  (line, molecule, 2.84955371245)  (line, material, 3.29174495332)  (line, product, 7.58473213971)  
+line.n.22
