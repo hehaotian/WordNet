@@ -1,87 +1,94 @@
-#!/usr/bin/env python2.5
-# Park, Jonggun
-# Professor Levow
-# TA: Glenn Slayden
-# Ling 571
-import itertools
-from nltk.corpus import wordnet,wordnet_ic
-from nltk import wordpunct_tokenize                     #Tokenize
+# -*- coding: utf-8 -*-
+"""
+Created on Sun March 5 03:24:06 2014
+@author: haotianhe
+LING 571 HW 6
+Word Sense Disambiguation
+"""
+
 import sys
+from nltk.corpus import wordnet
+from nltk.corpus import wordnet_ic
 from nltk.corpus.reader.wordnet import information_content
-output = "result"
-outputPrint = open(output, 'w')
-wnic = wordnet_ic.ic('ic-brown-resnik-add1.dat')
-wsd_contexts = sys.argv[1]
-Examples = open(wsd_contexts, 'r')                    # Example sentences.
 
-def removeBrackets(variable):
-    return str(variable).replace('[','').replace(']','')
+def report(context_pair, wnic):
+    best_senses = []
+    results = []
 
-def removeQuotes(variable):
-    return str(variable).replace('\'','').replace('\'','')
+    for i in xrange(len(context_pair)):
+        word = context_pair[i][0]
+        
+        normal_fact = 0.0
+        scores = dict()
 
-def similarityFunction(prob, word):
-	firstTime = 1
-	value = 0.0
-	# This part of the code will acquire all the synonyms of the Probe word and from theGiven words.
-	probTraverse = wordnet.synsets(prob, pos=wordnet.NOUN)
-	wordTraverse = wordnet.synsets(word, pos=wordnet.NOUN)
-	# It traverses every single synonym from the prob word
-	# comparing with all the synonyms of the given word
-	# By having those values, the code gets all the
-	# common hypernyms of those 2 synonyms.
-	# it saves the highest information content and the MIS.
-	for i in range(len(probTraverse)):
-		for j in range(len(wordTraverse)):
-			hypernyms = probTraverse[i].common_hypernyms(wordTraverse[j])
-			for k in range(len(hypernyms)):
-				if firstTime == 1:
-					firstTime = 2
-					name = hypernyms[k].name
-					temp = wordnet.synset(name)
-					value = information_content(temp, wnic)
-					MIS = probTraverse[i].name # save this <-- MIS
-					dictionary = {MIS : value}
-				else:
-					name2 = hypernyms[k].name 
-					temp2 = wordnet.synset(name2)
-					checkValue = information_content(temp2, wnic)	# save the new information content if it is higher
-					if value <= checkValue:
-						MIS = probTraverse[i].name
-						dictionary = {MIS : checkValue}
-	# It returns a dictionary which contains the MIS and the information content value.
-	return dictionary
+        for context in context_pair[i][1]:
+            resnik = resnik_similarity(word, context, wnic)
 
-# Reads in the data.
-# This part of the code, reads in the given data line by line and word by word.
-for line in Examples:
-	WSD = wordpunct_tokenize(line)
-	temp = []
-	misDictionary = {}
-	for word in WSD:
-		if word is not ',':
-			temp.append(word)
-	result = []
-	dictionary = {}
-	for i in range(len(temp)):			# if there are 2 words and 1 probe, we run it twice 
-		if i > 0:
-			hotline = removeBrackets(temp[2])
-			hotline = str(hotline)
-			if hotline != 'hotline':
-				dictionary = similarityFunction(temp[0], temp[i]) 
-				value = dictionary.values()
-				temporary = str(dictionary.values())
-				temporary = removeBrackets(temporary)
-				newMIS = removeBrackets(dictionary.keys()) # = MIS
-				newMIS = removeQuotes(newMIS)
-				result.append("(" + temp[0] + ", " + temp[i] + ", " + temporary + ")")
-				misDictionary.update({newMIS : value})
-			else:
-				result.append("(" + temp[0] + ", " + temp[i] + ", " + temporary + ")")
-				misDictionary.update({newMIS : value})
-	# At this point, we have found the highest sense given all the words.
-	outputPrint.write(str(', '.join(result).replace('),', ')')) + '\n')
-	outputPrint.write(str(max(misDictionary, key=misDictionary.get)) + '\n')
-	#print newMIS
+            if resnik:
+                mis = resnik[0]
+                sim = resnik[1]
+                item = "(" + word + ", " + context + ", " + str(sim) + ") "
+                print item,
+                normal_fact += sim
 
-outputPrint.close()
+                for sense in wordnet.synsets(word):
+                    if mis in sense.common_hypernyms(sense):
+                        scores.update({sense:sim})
+
+            else:
+                item = "(" + word + ", " + context + ", " + "None) "
+                print item,
+
+        for score in scores:
+            scores[score] = scores[score] / normal_fact
+
+        print("\n" + max(scores.iterkeys(), key=lambda x: scores[x]).name)
+
+
+def resnik_similarity(word, context, wnic):
+    
+    probe_senses = wordnet.synsets(word)
+    context_senses = wordnet.synsets(context)
+
+    if not context_senses:
+        return None
+
+    top_subs = set()
+
+    for sense in probe_senses:
+        for context in context_senses:
+            common_hypernyms = sense.common_hypernyms(context)
+            if common_hypernyms:
+                mark1 = max(common_hypernyms, key=lambda x: information_content(x, wnic))
+                mark2 = information_content(mark1, wnic)
+                top_subs.add((mark1, mark2))
+
+    mis = max(top_subs, key=lambda x: x[1])
+    
+    return mis
+
+def load_wsd_contexts(wsd_contexts):
+    
+    context_pair = []
+
+    for sense in open(wsd_contexts, 'r'):
+        sense = sense.strip().split()
+        word = sense[0]
+        contexts = sense[1].split(',')
+        context_pair.append((word, contexts))
+
+    return context_pair
+
+
+if __name__ == "__main__":
+
+    if (len(sys.argv) >= 2):
+        wsd_contexts = sys.argv[1]
+        ic_file = sys.argv[2]
+    else:
+        wsd_contexts = "/dropbox/13-14/571/hw6/wsd_contexts.txt"
+        ic_file = "ic-brown-resnik-add1.dat"
+
+    wnic = wordnet_ic.ic(ic_file)
+    context_pair = load_wsd_contexts(wsd_contexts)
+    report(context_pair, wnic)
